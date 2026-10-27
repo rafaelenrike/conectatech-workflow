@@ -21,7 +21,12 @@ RUN groupadd --gid 10001 appgroup && \
 
 WORKDIR /app
 COPY --from=builder /wheels /wheels
-RUN python -m pip install --no-cache-dir /wheels/* && rm -rf /wheels
+
+RUN python -m pip install --no-cache-dir /wheels/* && \
+    python -m pip check && \
+    rm -rf /wheels && \
+    python -m pip uninstall --yes pip setuptools wheel
+
 COPY --chown=appuser:appgroup app ./app
 
 USER 10001:10001

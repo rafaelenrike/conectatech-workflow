@@ -67,11 +67,12 @@ jobs:
           context: .
           load: true
           pull: true
+          no-cache: true
           push: false
           tags: ${{ env.LOCAL_IMAGE }}
           build-args: APP_VERSION=${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          #cache-from: type=gha
+          #cache-to: type=gha,mode=max
 
       - name: Trivy vulnerability scan
         uses: aquasecurity/trivy-action@v0.36.0
