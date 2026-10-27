@@ -66,6 +66,7 @@ jobs:
         with:
           context: .
           load: true
+          pull: true
           push: false
           tags: ${{ env.LOCAL_IMAGE }}
           build-args: APP_VERSION=${{ github.sha }}

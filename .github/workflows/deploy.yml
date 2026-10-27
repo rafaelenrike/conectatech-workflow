@@ -51,6 +51,7 @@ jobs:
         with:
           context: .
           load: true
+          pull: true
           push: false
           tags: ${{ env.IMAGE }}
           build-args: APP_VERSION=${{ env.APP_VERSION }}
