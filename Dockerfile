@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm AS builder
+FROM python:3.13-slim-trixie AS builder
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
@@ -9,7 +9,7 @@ COPY app ./app
 RUN python -m pip install --upgrade pip && \
     python -m pip wheel --wheel-dir /wheels .
 
-FROM python:3.13-slim-bookworm AS runtime
+FROM python:3.13-slim-trixie AS runtime
 
 ARG APP_VERSION=dev
 ENV APP_VERSION=${APP_VERSION} \
