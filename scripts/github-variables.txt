@@ -1,0 +1,8 @@
+AZURE_RESOURCE_GROUP=rg-code-to-cloud-demo
+AZURE_LOCATION=eastus2
+TFSTATE_RESOURCE_GROUP=rg-code-to-cloud-state
+TFSTATE_STORAGE_ACCOUNT=stctcrmb75
+TFSTATE_CONTAINER=tfstate
+TF_NAME_SUFFIX=rmb75
+ACR_NAME=acrctcrmb75
+AZURE_CONTAINER_APP_NAME=ca-code-to-cloud-rmb75
