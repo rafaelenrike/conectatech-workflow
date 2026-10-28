@@ -41,7 +41,7 @@ def home() -> str:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {
-        "status": "ok",
+        "status": "error",
         "version": APP_VERSION,
         "timestamp": datetime.now(UTC).isoformat(),
     }
