@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-to-cloud-demo"
+version = "1.0.0"
+description = "Aplicación de demostración para el workshop Code to Cloud: DevSecOps"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.162.0",
+  "starlette==1.10.0",
+  "uvicorn[standard]==0.37.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx==0.28.1",
+  "pytest==8.4.2",
+  "pytest-cov==7.0.0",
+  "ruff==0.14.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=85"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["docs*", "infra*", "tests*"]

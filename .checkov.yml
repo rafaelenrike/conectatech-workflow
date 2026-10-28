@@ -1,0 +1,17 @@
+framework:
+  - terraform
+quiet: true
+compact: true
+
+# Excepciones conscientes para un demo efímero y de bajo costo.
+# ACR Basic no ofrece varias capacidades empresariales que Checkov recomienda.
+# La imagen se analiza con Trivy antes del push y el acceso administrativo está deshabilitado.
+skip-check:
+  - CKV_AZURE_139  # Red pública necesaria para runners alojados por GitHub.
+  - CKV_AZURE_163  # El gate de vulnerabilidades se implementa con Trivy.
+  - CKV_AZURE_164  # Firma de imágenes queda fuera del alcance de 120 minutos.
+  - CKV_AZURE_165  # El demo usa una sola región.
+  - CKV_AZURE_166  # Cuarentena administrada requiere un diseño empresarial.
+  - CKV_AZURE_167  # Retención nativa de ACR requiere otro nivel de servicio.
+  - CKV_AZURE_233  # Redundancia zonal no aplica al ACR Basic del demo.
+  - CKV_AZURE_237  # Endpoints de datos dedicados requieren ACR Premium.

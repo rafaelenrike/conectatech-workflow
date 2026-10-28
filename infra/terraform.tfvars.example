@@ -1,0 +1,8 @@
+resource_group_name = "rg-code-to-cloud-demo"
+name_suffix         = "rafa26"
+
+tags = {
+  workshop = "code-to-cloud-devsecops"
+  purpose  = "demo"
+  owner    = "instructor"
+}

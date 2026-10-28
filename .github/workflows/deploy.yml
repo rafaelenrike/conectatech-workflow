@@ -1,0 +1,89 @@
+name: Deploy application
+
+on:
+  workflow_run:
+    workflows: ["CI and security"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+          (github.event.workflow_run.conclusion == 'success' &&
+           github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    #environment: production
+    env:
+      IMAGE: ${{ vars.ACR_NAME }}.azurecr.io/code-to-cloud:${{ github.event.workflow_run.head_sha || github.sha }}
+      APP_VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+    steps:
+      - name: Checkout tested commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Azure login with Service Principal
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Sign in to Azure Container Registry
+        run: az acr login --name "${{ vars.ACR_NAME }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver: docker-container
+
+      - name: Build image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          pull: true
+          push: false
+          tags: ${{ env.IMAGE }}
+          build-args: APP_VERSION=${{ env.APP_VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trivy release gate
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+
+      - name: Push approved image
+        run: docker push "${IMAGE}"
+
+      - name: Update Azure Container App
+        run: >-
+          az containerapp update
+          --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}"
+          --name "${{ vars.AZURE_CONTAINER_APP_NAME }}"
+          --image "${IMAGE}"
+          --set-env-vars "APP_VERSION=${APP_VERSION}"
+
+      - name: Smoke test
+        run: |
+          FQDN=$(az containerapp show --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" --name "${{ vars.AZURE_CONTAINER_APP_NAME }}" --query properties.configuration.ingress.fqdn -o tsv)
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error "https://${FQDN}/health"; then exit 0; fi
+            sleep 10
+          done
+          exit 1
