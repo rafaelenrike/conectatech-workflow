@@ -32,7 +32,7 @@ def home() -> str:
   <body><main>
     <p>ConectaTech 2026</p>
     <h1>Code to Cloud: DevSecOps</h1>
-    <p>La aplicación desplegada de forma segura usando GitHub Actions, Docker y Terraform.</p>
+    <p>Esta es la primera demo de funcionamiento de GitHub Actions, Docker y Terraform.</p>
     <p>Versión desplegada: <code>{APP_VERSION}</code></p>
   </main></body>
 </html>"""
